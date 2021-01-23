@@ -16,7 +16,20 @@ start/reset the game meaning make the game very first state
 #### response body
 
 ```json
-{}
+{
+  "positions": [
+    {
+      "h": 8,
+      "w": 64,
+      "value": "arrow-left"
+    },
+    {
+      "h": 33,
+      "w": 6,
+      "value": "treasure"
+    },
+    ...
+}
 ```
 
 ### GET `/status`
@@ -35,23 +48,22 @@ get current state of the game
 {
   "positions": [
     {
-      "h": 38,
-      "w": 38,
-      "value": "yazirusi"
+      "h": 8,
+      "w": 64,
+      "value": "arrow-left"
     },
     {
-      "h": 50,
-      "w": 49,
-      "value": "otakara"
+      "h": 33,
+      "w": 6,
+      "value": "treasure"
     },
     ...
-  ]
 }
 ```
 
 ### POST `/fill`
 
-fill a cell in the game field with value (wanawan | otakara | yazirusi)
+fill a cell in the game field with value (arrow-left | arrow-right | arrow-up | arrow-down | treasure)
 
 #### request body
 
@@ -59,7 +71,7 @@ fill a cell in the game field with value (wanawan | otakara | yazirusi)
 {
     "h": 120,
     "w": 49,
-    "value": "wanawana"
+    "value": "arrow-right"
 }
 ```
 
