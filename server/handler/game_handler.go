@@ -28,6 +28,14 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+		gv := view.GameStatus(newGame)
+
+		bytes, err := json.Marshal(gv)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		w.Write(bytes)
 	}
 }
 
