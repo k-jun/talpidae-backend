@@ -1,6 +1,6 @@
 package storage
 
-import "talpidae-backend/models/game"
+import "talpidae-backend/model/game"
 
 type GameStorage interface {
 	Add(string, game.Game) error

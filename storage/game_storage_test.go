@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"talpidae-backend/models/game"
+	"talpidae-backend/model/game"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

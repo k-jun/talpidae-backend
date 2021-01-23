@@ -3,14 +3,14 @@ package game
 var _ Game = &GameMock{}
 
 type GameMock struct {
-	outError  error
-	outBlocks [][]BlockType
+	OutError  error
+	OutBlocks [][]BlockType
 }
 
 func (g *GameMock) Fill(_ int, _ int, _ BlockType) error {
-	return g.outError
+	return g.OutError
 }
 
 func (g *GameMock) Blocks() [][]BlockType {
-	return g.outBlocks
+	return g.OutBlocks
 }

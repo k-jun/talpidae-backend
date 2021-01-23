@@ -55,6 +55,7 @@ func New(height int, width int) (Game, error) {
 		}
 	}
 	// yazirusi
+	cnt = 0
 	for {
 		if !random_fill(blocks, height, width, Yazirusi) {
 			continue
@@ -76,7 +77,6 @@ func random_fill(blocks [][]BlockType, maxHeight int, maxWidth int, value BlockT
 	}
 	blocks[rh][rw] = value
 	return true
-
 }
 
 func (g *gameImpl) Fill(height int, width int, value BlockType) error {
