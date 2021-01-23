@@ -53,6 +53,8 @@ get current state of the game
 
 fill a cell in the game field with value (wanawan | otakara | yazirusi)
 
+### request body
+
 ```json
 {
     "h": 120,
