@@ -3,9 +3,9 @@ package view
 import "talpidae-backend/model/game"
 
 type Position struct {
-	H     int    `json:"h"`
-	W     int    `json:"w"`
-	Value string `json:"value"`
+	H     int            `json:"h"`
+	W     int            `json:"w"`
+	Value game.BlockType `json:"value"`
 }
 
 type GameView struct {

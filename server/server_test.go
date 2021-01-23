@@ -57,10 +57,10 @@ func TestGameStatus(t *testing.T) {
 		{
 			name: "success",
 			beforeGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{"otakara", ""}, {"", ""}}},
+				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{"treasure", ""}, {"", ""}}},
 			},
 			outStatusCode: 200,
-			outBody:       `{"positions":[{"h":0,"w":0,"value":"otakara"}]}`,
+			outBody:       `{"positions":[{"h":0,"w":0,"value":"treasure"}]}`,
 		},
 		{
 			name:              "failure",
@@ -94,7 +94,6 @@ func TestGameFill(t *testing.T) {
 		name              string
 		beforeGameStorage storage.GameStorage
 		inBody            string
-		afterGameStorage  storage.GameStorage
 		outStatusCode     int
 	}{
 		{
@@ -102,23 +101,17 @@ func TestGameFill(t *testing.T) {
 			beforeGameStorage: &storage.GameStorageMock{
 				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{"", ""}, {"", ""}}},
 			},
-			inBody: `{"h":0,"w":0,"value":"otakara"}`,
-			afterGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{"otakara", ""}, {"", ""}}},
-			},
+			inBody:        `{"h":0,"w":0,"value":"treasure"}`,
 			outStatusCode: 200,
 		},
 		{
-			name:   "failure: invalid body",
-			inBody: `invalid`,
-			// beforeGameStorage: &storage.GameStorageMock{
-			// 	OutError: errors.New(""),
-			// },
+			name:          "failure: invalid body",
+			inBody:        `invalid`,
 			outStatusCode: 400,
 		},
 		{
 			name:   "failure: game storage error",
-			inBody: `{"h":0,"w":0,"value":"otakara"}`,
+			inBody: `{"h":0,"w":0,"value":"treasure"}`,
 			beforeGameStorage: &storage.GameStorageMock{
 				OutError: errors.New(""),
 			},
@@ -126,7 +119,7 @@ func TestGameFill(t *testing.T) {
 		},
 		{
 			name:   "failure: game error",
-			inBody: `{"h":0,"w":0,"value":"otakara"}`,
+			inBody: `{"h":0,"w":0,"value":"treasure"}`,
 			beforeGameStorage: &storage.GameStorageMock{
 				OutGame: &game.GameMock{OutError: errors.New("")},
 			},

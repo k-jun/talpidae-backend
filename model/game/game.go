@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	OtakaraCnt   = 3
-	YazirushiCnt = OtakaraCnt * 3
+	TreasureCnt = 3
+	ArrowCnt    = TreasureCnt * 3
 )
 
 type Game interface {
@@ -19,67 +19,111 @@ type gameImpl struct {
 	blocks [][]BlockType
 }
 
-type BlockType = string
+type BlockType string
 
 var (
-	// Sakusaku BlockType = "sakusaku"
-	// Katikati BlockType = "katikati"
-	// Gotigoti BlockType = "gotigoti"
-	Otakara  BlockType = "otakara"
-	Wanawana BlockType = "wanawana"
-	Yazirusi BlockType = "yazirusi"
+	Treasure   BlockType = "treasure"
+	ArrowRight BlockType = "arrow-right"
+	ArrowLeft  BlockType = "arrow-left"
+	ArrowUp    BlockType = "arrow-up"
+	ArrowDown  BlockType = "arrow-down"
 )
+
+func validateBlockType(x BlockType) bool {
+	all := []BlockType{Treasure, ArrowUp, ArrowDown, ArrowLeft, ArrowRight}
+	for _, bt := range all {
+		if bt == x {
+			return true
+		}
+	}
+	return false
+}
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
 func New(height int, width int) (Game, error) {
-	if height*width < OtakaraCnt+YazirushiCnt {
+	if height*width < TreasureCnt+ArrowCnt {
 		return nil, InvalidArgumentErr
 	}
 	blocks := make([][]BlockType, height)
 	for i := 0; i < height; i++ {
 		blocks[i] = make([]BlockType, width)
 	}
+	newGame := &gameImpl{blocks}
 
-	// otakara
+	// treasures
 	cnt := 0
 	for {
-		if !random_fill(blocks, height, width, Otakara) {
+		h := rand.Intn(height)
+		w := rand.Intn(width)
+		if err := newGame.Fill(h, w, Treasure); err != nil {
 			continue
 		}
 		cnt += 1
-		if cnt >= OtakaraCnt {
+		if cnt >= TreasureCnt {
 			break
 		}
 	}
-	// yazirusi
+	// arrows
 	cnt = 0
 	for {
-		if !random_fill(blocks, height, width, Yazirusi) {
+		h := rand.Intn(height)
+		w := rand.Intn(width)
+		if err := newGame.Fill(h, w, newGame.closestTreasureArrowDirection(h, w)); err != nil {
 			continue
 		}
 		cnt += 1
-		if cnt >= YazirushiCnt {
+		if cnt >= ArrowCnt {
 			break
 		}
 	}
 
-	return &gameImpl{blocks}, nil
+	return newGame, nil
 }
 
-func random_fill(blocks [][]BlockType, maxHeight int, maxWidth int, value BlockType) bool {
-	rh := rand.Intn(maxHeight)
-	rw := rand.Intn(maxWidth)
-	if blocks[rh][rw] != "" {
-		return false
+func (g *gameImpl) closestTreasureArrowDirection(h int, w int) BlockType {
+	abs := func(x int) int {
+		if x < 0 {
+			x = -x
+		}
+		return x
 	}
-	blocks[rh][rw] = value
-	return true
+	pos := [2]int{len(g.blocks) * 3, len(g.blocks[0]) * 3}
+	for i := 0; i < len(g.blocks); i++ {
+		for j := 0; j < len(g.blocks[i]); j++ {
+			if g.blocks[i][j] == Treasure {
+				if abs(h-i)+abs(w-j) < abs(h-pos[0])+abs(w-pos[1]) {
+					pos = [2]int{i, j}
+				}
+			}
+		}
+	}
+
+	y := pos[0] - h
+	x := pos[1] - w
+	if abs(y) >= abs(x) {
+		if y > 0 {
+			return ArrowDown
+		} else {
+			return ArrowUp
+		}
+	} else {
+		if x > 0 {
+			return ArrowRight
+		} else {
+			return ArrowLeft
+		}
+
+	}
 }
 
 func (g *gameImpl) Fill(height int, width int, value BlockType) error {
+	if !validateBlockType(value) {
+		return InvalidArgumentErr
+	}
+
 	if height < 0 || height >= len(g.blocks) {
 		return InvalidArgumentErr
 	}
@@ -88,7 +132,7 @@ func (g *gameImpl) Fill(height int, width int, value BlockType) error {
 		return InvalidArgumentErr
 	}
 
-	if g.blocks[height][width] == Otakara || g.blocks[height][width] == Yazirusi {
+	if g.blocks[height][width] != "" {
 		return InvalidArgumentErr
 	}
 
