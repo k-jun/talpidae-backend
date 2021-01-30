@@ -22,13 +22,7 @@ func TestGameStart(t *testing.T) {
 	}{
 		{
 			name:          "success",
-			url:           "/start",
 			outStatusCode: 200,
-		},
-		{
-			name:          "failure",
-			url:           "/gamestart",
-			outStatusCode: 404,
 		},
 	}
 
@@ -39,7 +33,7 @@ func TestGameStart(t *testing.T) {
 			attachHandlers(router, gameStorage)
 
 			rec := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, c.url, nil)
+			req := httptest.NewRequest(http.MethodGet, "/start", nil)
 			router.ServeHTTP(rec, req)
 
 			assert.Equal(t, c.outStatusCode, rec.Result().StatusCode)
