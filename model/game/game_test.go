@@ -23,16 +23,16 @@ func TestFill(t *testing.T) {
 	}{
 		{
 			name:         "success",
-			beforeBlocks: [][]BlockType{{"", ""}, {"", ""}},
+			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
 			inHeight:     0,
 			inWidth:      1,
 			inBlockType:  Treasure,
-			afterBlocks:  [][]BlockType{{"", "treasure"}, {"", ""}},
+			afterBlocks:  [][]BlockType{{SakuSaku, Treasure}, {SakuSaku, SakuSaku}},
 			outError:     nil,
 		},
 		{
 			name:         "failure: invalid position",
-			beforeBlocks: [][]BlockType{{"treasure", ""}, {"", ""}},
+			beforeBlocks: [][]BlockType{{Treasure, SakuSaku}, {SakuSaku, SakuSaku}},
 			inHeight:     0,
 			inWidth:      0,
 			inBlockType:  Treasure,
@@ -40,15 +40,15 @@ func TestFill(t *testing.T) {
 		},
 		{
 			name:         "failure: invalid block type",
-			beforeBlocks: [][]BlockType{{"", ""}, {"", ""}},
+			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
 			inHeight:     0,
 			inWidth:      0,
-			inBlockType:  "invlaid",
+			inBlockType:  -1,
 			outError:     InvalidArgumentErr,
 		},
 		{
 			name:         "failure: invalid height",
-			beforeBlocks: [][]BlockType{{"", ""}, {"", ""}},
+			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
 			inHeight:     2,
 			inWidth:      1,
 			inBlockType:  Treasure,
@@ -56,7 +56,7 @@ func TestFill(t *testing.T) {
 		},
 		{
 			name:         "failure: invalid width",
-			beforeBlocks: [][]BlockType{{"", ""}, {"", ""}},
+			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
 			inHeight:     0,
 			inWidth:      2,
 			inBlockType:  Treasure,

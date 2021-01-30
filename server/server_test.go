@@ -57,10 +57,10 @@ func TestGameStatus(t *testing.T) {
 		{
 			name: "success",
 			beforeGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{"treasure", ""}, {"", ""}}},
+				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{game.Treasure, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
 			},
 			outStatusCode: 200,
-			outBody:       `{"positions":[{"h":0,"w":0,"value":"treasure"}]}`,
+			outBody:       `{"positions":[{"h":0,"w":0,"value":3}]}`,
 		},
 		{
 			name:              "failure",
@@ -99,9 +99,9 @@ func TestGameFill(t *testing.T) {
 		{
 			name: "success",
 			beforeGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{"", ""}, {"", ""}}},
+				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{game.SakuSaku, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
 			},
-			inBody:        `{"h":0,"w":0,"value":"treasure"}`,
+			inBody:        `{"h":0,"w":0,"value":3}`,
 			outStatusCode: 200,
 		},
 		{
@@ -111,7 +111,7 @@ func TestGameFill(t *testing.T) {
 		},
 		{
 			name:   "failure: game storage error",
-			inBody: `{"h":0,"w":0,"value":"treasure"}`,
+			inBody: `{"h":0,"w":0,"value":3}`,
 			beforeGameStorage: &storage.GameStorageMock{
 				OutError: errors.New(""),
 			},
@@ -119,7 +119,7 @@ func TestGameFill(t *testing.T) {
 		},
 		{
 			name:   "failure: game error",
-			inBody: `{"h":0,"w":0,"value":"treasure"}`,
+			inBody: `{"h":0,"w":0,"value":3}`,
 			beforeGameStorage: &storage.GameStorageMock{
 				OutGame: &game.GameMock{OutError: errors.New("")},
 			},

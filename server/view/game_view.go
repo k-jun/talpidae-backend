@@ -19,7 +19,7 @@ func GameStatus(g game.Game) GameView {
 
 	for i := 0; i < len(blocks); i++ {
 		for j := 0; j < len(blocks[i]); j++ {
-			if blocks[i][j] != "" {
+			if blocks[i][j] != game.SakuSaku {
 				pos = append(pos, Position{H: i, W: j, Value: blocks[i][j]})
 			}
 		}

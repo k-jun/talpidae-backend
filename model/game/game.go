@@ -19,14 +19,21 @@ type gameImpl struct {
 	blocks [][]BlockType
 }
 
-type BlockType string
+type BlockType int
 
-var (
-	Treasure   BlockType = "treasure"
-	ArrowRight BlockType = "arrow-right"
-	ArrowLeft  BlockType = "arrow-left"
-	ArrowUp    BlockType = "arrow-up"
-	ArrowDown  BlockType = "arrow-down"
+const (
+	SakuSaku       BlockType = iota
+	KachiKachi     BlockType = 1
+	GochiGochi     BlockType = 2
+	Treasure       BlockType = 3
+	ArrowRight     BlockType = 4
+	ArrowLeft      BlockType = 5
+	ArrowUp        BlockType = 6
+	ArrowDown      BlockType = 7
+	WanaArrowRight BlockType = 8
+	WanaArrowLeft  BlockType = 9
+	WanaArrowUp    BlockType = 10
+	WanaArrowDown  BlockType = 11
 )
 
 func validateBlockType(x BlockType) bool {
@@ -132,7 +139,7 @@ func (g *gameImpl) Fill(height int, width int, value BlockType) error {
 		return InvalidArgumentErr
 	}
 
-	if g.blocks[height][width] != "" {
+	if g.blocks[height][width] != SakuSaku {
 		return InvalidArgumentErr
 	}
 
