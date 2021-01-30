@@ -55,17 +55,29 @@ func validateBlockType(x BlockType) bool {
 	return false
 }
 
+func randomBlockType() BlockType {
+	x := rand.Intn(10)
+	if x < 5 {
+		return SakuSaku
+	} else if x < 8 {
+		return KachiKachi
+	} else {
+		return GochiGochi
+	}
+}
+
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
 func New(height int, width int) (Game, error) {
-	if height*width < TreasureCnt+ArrowCnt {
-		return nil, InvalidArgumentErr
-	}
 	blocks := make([][]BlockType, height)
 	for i := 0; i < height; i++ {
-		blocks[i] = make([]BlockType, width)
+		row := []BlockType{}
+		for j := 0; j < width; j++ {
+			row = append(row, randomBlockType())
+		}
+		blocks = append(blocks, row)
 	}
 	newGame := &gameImpl{blocks: blocks, logs: []FillLog{}}
 
