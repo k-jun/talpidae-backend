@@ -1,29 +1,37 @@
 package view
 
-import "talpidae-backend/model/game"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"talpidae-backend/model/game"
+)
 
 type Position struct {
-	H     int            `json:"h"`
-	W     int            `json:"w"`
-	Value game.BlockType `json:"value"`
+	H      int            `json:"h"`
+	W      int            `json:"w"`
+	Value  game.BlockType `json:"value"`
+	UserId string         `json:"user_id"`
 }
 
 type GameView struct {
-	Positions []Position `json:"positions"`
+	Field [][]game.BlockType `json:"field"`
 }
 
-func GameStatus(g game.Game) GameView {
+func ToGameField(g game.Game) GameView {
+	return GameView{Field: g.Blocks()}
+}
 
-	blocks := g.Blocks()
-	pos := []Position{}
-
-	for i := 0; i < len(blocks); i++ {
-		for j := 0; j < len(blocks[i]); j++ {
-			if blocks[i][j] != game.SakuSaku {
-				pos = append(pos, Position{H: i, W: j, Value: blocks[i][j]})
-			}
-		}
+func FromGamePosition(r *http.Request) (*Position, error) {
+	var body Position
+	bytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bytes, &body)
+	if err != nil {
+		return nil, err
 	}
 
-	return GameView{Positions: pos}
+	return &body, nil
 }

@@ -3,14 +3,19 @@ package game
 var _ Game = &GameMock{}
 
 type GameMock struct {
-	OutError  error
-	OutBlocks [][]BlockType
+	ErrorMock  error
+	BlocksMock [][]BlockType
+	LogsMock   []FillLog
 }
 
-func (g *GameMock) Fill(_ int, _ int, _ BlockType) error {
-	return g.OutError
+func (g *GameMock) Fill(_ string, _ BlockType, _ int, _ int) error {
+	return g.ErrorMock
 }
 
 func (g *GameMock) Blocks() [][]BlockType {
-	return g.OutBlocks
+	return g.BlocksMock
+}
+
+func (g *GameMock) Logs() []FillLog {
+	return g.LogsMock
 }

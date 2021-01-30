@@ -15,48 +15,64 @@ func TestFill(t *testing.T) {
 	cases := []struct {
 		name         string
 		beforeBlocks [][]BlockType
+		inUserId     string
+		inBlockType  BlockType
 		inHeight     int
 		inWidth      int
-		inBlockType  BlockType
 		afterBlocks  [][]BlockType
+		afterLogs    []FillLog
 		outError     error
 	}{
 		{
 			name:         "success",
 			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
+			inUserId:     "38f6e080-14df-3efa-abe2-9b01943eebd0",
+			inBlockType:  WanaArrowUp,
 			inHeight:     0,
 			inWidth:      1,
-			inBlockType:  Treasure,
-			afterBlocks:  [][]BlockType{{SakuSaku, Treasure}, {SakuSaku, SakuSaku}},
+			afterBlocks:  [][]BlockType{{SakuSaku, WanaArrowUp}, {SakuSaku, SakuSaku}},
+			afterLogs:    []FillLog{{UserId: "38f6e080-14df-3efa-abe2-9b01943eebd0", Value: WanaArrowUp, Height: 0, Width: 1}},
 			outError:     nil,
 		},
 		{
 			name:         "failure: invalid position",
 			beforeBlocks: [][]BlockType{{Treasure, SakuSaku}, {SakuSaku, SakuSaku}},
+			inUserId:     "38f6e080-14df-3efa-abe2-9b01943eebd0",
+			inBlockType:  WanaArrowUp,
 			inHeight:     0,
 			inWidth:      0,
-			inBlockType:  Treasure,
+			outError:     InvalidArgumentErr,
+		},
+		{
+			name:         "failure: invalid UserId",
+			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
+			inBlockType:  WanaArrowUp,
+			inHeight:     0,
+			inWidth:      0,
 			outError:     InvalidArgumentErr,
 		},
 		{
 			name:         "failure: invalid block type",
 			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
+			inUserId:     "38f6e080-14df-3efa-abe2-9b01943eebd0",
+			inBlockType:  Treasure,
 			inHeight:     0,
 			inWidth:      0,
-			inBlockType:  -1,
 			outError:     InvalidArgumentErr,
 		},
 		{
 			name:         "failure: invalid height",
 			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
+			inUserId:     "38f6e080-14df-3efa-abe2-9b01943eebd0",
+			inBlockType:  WanaArrowUp,
 			inHeight:     2,
 			inWidth:      1,
-			inBlockType:  Treasure,
 			outError:     InvalidArgumentErr,
 		},
 		{
 			name:         "failure: invalid width",
 			beforeBlocks: [][]BlockType{{SakuSaku, SakuSaku}, {SakuSaku, SakuSaku}},
+			inUserId:     "38f6e080-14df-3efa-abe2-9b01943eebd0",
 			inHeight:     0,
 			inWidth:      2,
 			inBlockType:  Treasure,
@@ -67,12 +83,13 @@ func TestFill(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			g := gameImpl{blocks: c.beforeBlocks}
-			err := g.Fill(c.inHeight, c.inWidth, c.inBlockType)
+			err := g.Fill(c.inUserId, c.inBlockType, c.inHeight, c.inWidth)
 			if err != nil {
 				assert.Equal(t, c.outError, err)
 				return
 			}
 			assert.Equal(t, c.afterBlocks, g.blocks)
+			assert.Equal(t, c.afterLogs, g.logs)
 
 		})
 	}

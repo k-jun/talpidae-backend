@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"net/http"
 	"talpidae-backend/model/game"
 	"talpidae-backend/server/view"
@@ -28,7 +28,7 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		gv := view.GameStatus(newGame)
+		gv := view.ToGameField(newGame)
 
 		bytes, err := json.Marshal(gv)
 		if err != nil {
@@ -39,14 +39,14 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 	}
 }
 
-func GameStatus(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
+func GameField(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		g, err := gs.Find(DEBUG_KEY)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
-		gv := view.GameStatus(g)
+		gv := view.ToGameField(g)
 
 		bytes, err := json.Marshal(gv)
 		if err != nil {
@@ -59,13 +59,8 @@ func GameStatus(gs storage.GameStorage) func(http.ResponseWriter, *http.Request)
 
 func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var body view.Position
-		bytes, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
-		}
-		err = json.Unmarshal(bytes, &body)
+		body, err := view.FromGamePosition(r)
+		fmt.Println(body)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
@@ -75,7 +70,7 @@ func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
-		err = g.Fill(body.H, body.W, body.Value)
+		err = g.Fill(body.UserId, body.Value, body.H, body.W)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return

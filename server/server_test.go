@@ -41,7 +41,7 @@ func TestGameStart(t *testing.T) {
 	}
 }
 
-func TestGameStatus(t *testing.T) {
+func TestGameField(t *testing.T) {
 	cases := []struct {
 		name              string
 		beforeGameStorage storage.GameStorage
@@ -51,14 +51,14 @@ func TestGameStatus(t *testing.T) {
 		{
 			name: "success",
 			beforeGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{game.Treasure, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
+				GameMock: &game.GameMock{BlocksMock: [][]game.BlockType{{game.Treasure, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
 			},
 			outStatusCode: 200,
-			outBody:       `{"positions":[{"h":0,"w":0,"value":3}]}`,
+			outBody:       `{"field":[[3,0],[0,0]]}`,
 		},
 		{
 			name:              "failure",
-			beforeGameStorage: &storage.GameStorageMock{OutError: errors.New("")},
+			beforeGameStorage: &storage.GameStorageMock{ErrorMock: errors.New("")},
 			outStatusCode:     404,
 		},
 	}
@@ -69,7 +69,7 @@ func TestGameStatus(t *testing.T) {
 			attachHandlers(router, c.beforeGameStorage)
 
 			rec := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/status", nil)
+			req := httptest.NewRequest(http.MethodGet, "/field", nil)
 			router.ServeHTTP(rec, req)
 
 			if rec.Result().StatusCode != 200 {
@@ -93,9 +93,9 @@ func TestGameFill(t *testing.T) {
 		{
 			name: "success",
 			beforeGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutBlocks: [][]game.BlockType{{game.SakuSaku, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
+				GameMock: &game.GameMock{BlocksMock: [][]game.BlockType{{game.SakuSaku, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
 			},
-			inBody:        `{"h":0,"w":0,"value":3}`,
+			inBody:        `{"h":0,"w":0,"value":3,"user_id":"1769b643-a544-3886-8504-f227ebd35aca"}`,
 			outStatusCode: 200,
 		},
 		{
@@ -105,17 +105,17 @@ func TestGameFill(t *testing.T) {
 		},
 		{
 			name:   "failure: game storage error",
-			inBody: `{"h":0,"w":0,"value":3}`,
+			inBody: `{"h":0,"w":0,"value":3,"user_id":"1769b643-a544-3886-8504-f227ebd35aca"}`,
 			beforeGameStorage: &storage.GameStorageMock{
-				OutError: errors.New(""),
+				ErrorMock: errors.New(""),
 			},
 			outStatusCode: 404,
 		},
 		{
 			name:   "failure: game error",
-			inBody: `{"h":0,"w":0,"value":3}`,
+			inBody: `{"h":0,"w":0,"value":3,"user_id":"1769b643-a544-3886-8504-f227ebd35aca"}`,
 			beforeGameStorage: &storage.GameStorageMock{
-				OutGame: &game.GameMock{OutError: errors.New("")},
+				GameMock: &game.GameMock{ErrorMock: errors.New("")},
 			},
 			outStatusCode: 400,
 		},
