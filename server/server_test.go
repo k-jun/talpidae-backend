@@ -134,3 +134,47 @@ func TestGameFill(t *testing.T) {
 		})
 	}
 }
+
+func TestGameLogs(t *testing.T) {
+	cases := []struct {
+		name              string
+		beforeGameStorage storage.GameStorage
+		outStatusCode     int
+		outBody           string
+	}{
+		{
+			name: "success",
+			beforeGameStorage: &storage.GameStorageMock{
+				GameMock: &game.GameMock{LogsMock: []game.FillLog{{UserId: "de8a99d4-80b4-3fdf-9eb3-79bf42f5cc2e", Value: game.Treasure, Height: 0, Width: 0}}},
+			},
+			outStatusCode: 200,
+			outBody:       `{"logs":[{"h":0,"w":0,"value":3,"user_id":"de8a99d4-80b4-3fdf-9eb3-79bf42f5cc2e"}]}`,
+		},
+		{
+			name: "failure",
+			beforeGameStorage: &storage.GameStorageMock{
+				ErrorMock: errors.New(""),
+			},
+			outStatusCode: 404,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			router := mux.NewRouter()
+			attachHandlers(router, c.beforeGameStorage)
+
+			rec := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/logs", nil)
+			router.ServeHTTP(rec, req)
+
+			if rec.Result().StatusCode != 200 {
+				assert.Equal(t, c.outStatusCode, rec.Result().StatusCode)
+				return
+			}
+
+			bytes, _ := ioutil.ReadAll(rec.Result().Body)
+			assert.Equal(t, c.outBody, string(bytes))
+		})
+	}
+}

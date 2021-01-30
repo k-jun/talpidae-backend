@@ -59,7 +59,7 @@ func GameField(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 
 func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body, err := view.FromGamePosition(r)
+		body, err := view.FromGameCell(r)
 		fmt.Println(body)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -75,5 +75,23 @@ func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
+	}
+}
+
+func GameLogs(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		g, err := gs.Find(DEBUG_KEY)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+		gv := view.ToGamePositionArray(g)
+
+		bytes, err := json.Marshal(gv)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		w.Write(bytes)
 	}
 }
