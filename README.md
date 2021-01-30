@@ -96,6 +96,7 @@ get change logs of game field by a fill endpoint
 #### request body
 
 ```json
+{}
 ```
 
 #### response body
