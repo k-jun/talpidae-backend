@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"talpidae-backend/model/game"
 	"talpidae-backend/server/view"
@@ -60,7 +59,6 @@ func GameField(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := view.FromGameCell(r)
-		fmt.Println(body)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
