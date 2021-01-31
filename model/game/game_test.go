@@ -75,7 +75,7 @@ func TestFill(t *testing.T) {
 			inUserId:     "38f6e080-14df-3efa-abe2-9b01943eebd0",
 			inHeight:     0,
 			inWidth:      2,
-			inBlockType:  Treasure,
+			inBlockType:  WanaArrowUp,
 			outError:     InvalidArgumentErr,
 		},
 	}
