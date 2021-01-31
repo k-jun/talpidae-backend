@@ -70,7 +70,7 @@ get current field of the game
 
 ### POST `/fill`
 
-fill a cell in the game field with value (arrow-left | arrow-right | arrow-up | arrow-down | treasure)
+fill a cell in the game field with value (WanaArrowUp | WanaArrowDown | WanaArrowLeft | WanaArrowRight)
 
 #### request body
 
