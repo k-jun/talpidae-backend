@@ -98,6 +98,8 @@ func New(height int, width int) (Game, error) {
 			continue
 		}
 		newGame.blocks[h][w] = Treasure
+		newGame.surroundWith(GochiGochi, h, w, 1)
+		newGame.surroundWith(KachiKachi, h, w, 2)
 		cnt += 1
 		if cnt >= TreasureCnt {
 			break
@@ -112,6 +114,7 @@ func New(height int, width int) (Game, error) {
 			continue
 		}
 		newGame.blocks[h][w] = newGame.closestTreasureArrowDirection(h, w)
+		newGame.surroundWith(KachiKachi, h, w, 1)
 		cnt += 1
 		if cnt >= ArrowCnt {
 			break
@@ -119,6 +122,46 @@ func New(height int, width int) (Game, error) {
 	}
 
 	return newGame, nil
+}
+
+func (g *gameImpl) surroundWith(b BlockType, h, w, n int) {
+	round_indexes := g.roundIndexes(h, w, n)
+	for _, idx := range round_indexes {
+		if !isFillable(g.blocks[idx[0]][idx[1]]) {
+			continue
+		}
+		g.blocks[idx[0]][idx[1]] = b
+	}
+}
+
+func (g *gameImpl) roundIndexes(h, w, n int) [][2]int {
+	type index struct {
+	}
+	indexes := [][2]int{}
+
+	// top & down line
+	for i := w - n + 1; i < w+n; i++ {
+		indexes = append(indexes, [2]int{h - n, i})
+		indexes = append(indexes, [2]int{h + n, i})
+	}
+	// left & right line
+	for i := h - n + 1; i < h+n; i++ {
+		indexes = append(indexes, [2]int{i, w + n})
+		indexes = append(indexes, [2]int{i, w - n})
+	}
+	// corners
+	indexes = append(indexes, [2]int{h - n, w - n})
+	indexes = append(indexes, [2]int{h + n, w - n})
+	indexes = append(indexes, [2]int{h - n, w + n})
+	indexes = append(indexes, [2]int{h + n, w + n})
+
+	valid_indexes := [][2]int{}
+	for _, v := range indexes {
+		if v[0] >= 0 && v[0] < len(g.blocks) && v[1] >= 0 && v[1] < len(g.blocks[0]) {
+			valid_indexes = append(valid_indexes, v)
+		}
+	}
+	return valid_indexes
 }
 
 func (g *gameImpl) closestTreasureArrowDirection(h int, w int) BlockType {
