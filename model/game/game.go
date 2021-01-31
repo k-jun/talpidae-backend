@@ -55,6 +55,14 @@ func validateBlockType(x BlockType) bool {
 	return false
 }
 
+func isFillable(x BlockType) bool {
+	if x == Treasure || x == ArrowUp || x == ArrowDown || x == ArrowLeft || x == ArrowRight ||
+		x == WanaArrowUp || x == WanaArrowDown || x == WanaArrowLeft || x == WanaArrowRight {
+		return false
+	}
+	return true
+}
+
 func randomBlockType() BlockType {
 	x := rand.Intn(10)
 	if x < 5 {
@@ -71,7 +79,7 @@ func init() {
 }
 
 func New(height int, width int) (Game, error) {
-	blocks := make([][]BlockType, height)
+	blocks := [][]BlockType{}
 	for i := 0; i < height; i++ {
 		row := []BlockType{}
 		for j := 0; j < width; j++ {
@@ -86,10 +94,10 @@ func New(height int, width int) (Game, error) {
 	for {
 		h := rand.Intn(height)
 		w := rand.Intn(width)
-		if blocks[h][w] != SakuSaku {
+		if !isFillable(newGame.blocks[h][w]) {
 			continue
 		}
-		blocks[h][w] = Treasure
+		newGame.blocks[h][w] = Treasure
 		cnt += 1
 		if cnt >= TreasureCnt {
 			break
@@ -100,10 +108,10 @@ func New(height int, width int) (Game, error) {
 	for {
 		h := rand.Intn(height)
 		w := rand.Intn(width)
-		if blocks[h][w] != SakuSaku {
+		if !isFillable(newGame.blocks[h][w]) {
 			continue
 		}
-		blocks[h][w] = newGame.closestTreasureArrowDirection(h, w)
+		newGame.blocks[h][w] = newGame.closestTreasureArrowDirection(h, w)
 		cnt += 1
 		if cnt >= ArrowCnt {
 			break
@@ -162,7 +170,7 @@ func (g *gameImpl) Fill(userId string, value BlockType, height int, width int) e
 		return InvalidArgumentErr
 	}
 
-	if g.blocks[height][width] != SakuSaku {
+	if !isFillable(g.blocks[height][width]) {
 		return InvalidArgumentErr
 	}
 
