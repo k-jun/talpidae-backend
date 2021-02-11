@@ -4,6 +4,7 @@ import (
 	"talpidae-backend/model/game"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -11,26 +12,30 @@ func TestNewGameStorage(t *testing.T) {
 	_ = NewGameStorage()
 }
 
+var (
+	testKey, _ = uuid.FromBytes([]byte("bbc142ff-4686-38ba-b4dc-76b82c8da544"))
+)
+
 func TestGameStorageAdd(t *testing.T) {
 	cases := []struct {
 		name        string
-		beforeGames map[string]game.Game
-		inKey       string
+		beforeGames map[uuid.UUID]game.Game
+		inKey       uuid.UUID
 		inGame      game.Game
-		afterGames  map[string]game.Game
+		afterGames  map[uuid.UUID]game.Game
 		outError    error
 	}{
 		{
 			name:        "success",
-			beforeGames: make(map[string]game.Game),
-			inKey:       "test",
+			beforeGames: make(map[uuid.UUID]game.Game),
+			inKey:       testKey,
 			inGame:      &game.GameMock{},
-			afterGames:  map[string]game.Game{"test": &game.GameMock{}},
+			afterGames:  map[uuid.UUID]game.Game{testKey: &game.GameMock{}},
 		},
 		{
 			name:        "failure",
-			beforeGames: map[string]game.Game{"test": &game.GameMock{}},
-			inKey:       "test",
+			beforeGames: map[uuid.UUID]game.Game{testKey: &game.GameMock{}},
+			inKey:       testKey,
 			inGame:      &game.GameMock{},
 			outError:    GameStorageInvalidArgumentErr,
 		},
@@ -53,21 +58,21 @@ func TestGameStorageAdd(t *testing.T) {
 func TestGameStorageRemove(t *testing.T) {
 	cases := []struct {
 		name        string
-		beforeGames map[string]game.Game
-		inKey       string
-		afterGames  map[string]game.Game
+		beforeGames map[uuid.UUID]game.Game
+		inKey       uuid.UUID
+		afterGames  map[uuid.UUID]game.Game
 		outError    error
 	}{
 		{
 			name:        "success",
-			beforeGames: map[string]game.Game{"test": &game.GameMock{}},
-			inKey:       "test",
-			afterGames:  make(map[string]game.Game),
+			beforeGames: map[uuid.UUID]game.Game{testKey: &game.GameMock{}},
+			inKey:       testKey,
+			afterGames:  make(map[uuid.UUID]game.Game),
 		},
 		{
 			name:        "failure",
-			beforeGames: map[string]game.Game{},
-			inKey:       "test",
+			beforeGames: map[uuid.UUID]game.Game{},
+			inKey:       testKey,
 			outError:    GameStorageInvalidArgumentErr,
 		},
 	}
@@ -89,21 +94,21 @@ func TestGameStorageRemove(t *testing.T) {
 func TestGameStorageFind(t *testing.T) {
 	cases := []struct {
 		name        string
-		beforeGames map[string]game.Game
-		inKey       string
+		beforeGames map[uuid.UUID]game.Game
+		inKey       uuid.UUID
 		outGame     game.Game
 		outError    error
 	}{
 		{
 			name:        "success",
-			beforeGames: map[string]game.Game{"test": &game.GameMock{}},
-			inKey:       "test",
+			beforeGames: map[uuid.UUID]game.Game{testKey: &game.GameMock{}},
+			inKey:       testKey,
 			outGame:     &game.GameMock{},
 		},
 		{
 			name:        "failure",
-			beforeGames: map[string]game.Game{},
-			inKey:       "test",
+			beforeGames: map[uuid.UUID]game.Game{},
+			inKey:       testKey,
 			outError:    GameStorageInvalidArgumentErr,
 		},
 	}

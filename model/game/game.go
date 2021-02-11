@@ -2,18 +2,26 @@ package game
 
 import (
 	"math/rand"
+	"sync"
+	"talpidae-backend/model/user"
 	"time"
 )
 
 const (
-	TreasureCnt = 3
-	ArrowCnt    = TreasureCnt * 3
+	TreasureCnt      = 3
+	ArrowCnt         = TreasureCnt * 3
+	MaxNumberOfUsers = 4
+	Height           = 150
+	Width            = 80
 )
 
 type Game interface {
 	Fill(string, BlockType, int, int) error
 	Blocks() [][]BlockType
 	Logs() []FillLog
+	Users() []*user.User
+	JoinUser(*user.User) error
+	LeaveUser(*user.User) error
 }
 
 type FillLog struct {
@@ -24,8 +32,10 @@ type FillLog struct {
 }
 
 type gameImpl struct {
+	sync.Mutex
 	blocks [][]BlockType
 	logs   []FillLog
+	users  []*user.User
 }
 
 type BlockType int
@@ -231,4 +241,29 @@ func (g *gameImpl) Blocks() [][]BlockType {
 
 func (g *gameImpl) Logs() []FillLog {
 	return g.logs
+}
+
+func (g *gameImpl) Users() []*user.User {
+	return g.users
+}
+
+func (g *gameImpl) JoinUser(u *user.User) error {
+	g.Lock()
+	defer g.Unlock()
+
+	return nil
+}
+
+func (g *gameImpl) LeaveUser(u *user.User) error {
+	g.Lock()
+	defer g.Unlock()
+
+	for i, user := range g.users {
+		if u == user {
+			g.users = append(g.users[:i], g.users[i+1:]...)
+			return nil
+		}
+	}
+
+	return InvalidArgumentErr
 }

@@ -1,24 +1,30 @@
 package storage
 
-import "talpidae-backend/model/game"
+import (
+	"talpidae-backend/model/game"
+	"talpidae-backend/model/user"
+
+	"github.com/google/uuid"
+)
 
 type GameStorage interface {
-	Add(string, game.Game) error
-	Remove(string) error
-	Find(string) (game.Game, error)
+	Add(uuid.UUID, game.Game) error
+	Remove(uuid.UUID) error
+	Find(uuid.UUID) (game.Game, error)
+	RandomMatch(*user.User) (uuid.UUID, error)
 }
 
 func NewGameStorage() GameStorage {
 	return &gameStorageImpl{
-		games: make(map[string]game.Game),
+		games: make(map[uuid.UUID]game.Game),
 	}
 }
 
 type gameStorageImpl struct {
-	games map[string]game.Game
+	games map[uuid.UUID]game.Game
 }
 
-func (gs *gameStorageImpl) Add(key string, g game.Game) error {
+func (gs *gameStorageImpl) Add(key uuid.UUID, g game.Game) error {
 	if gs.games[key] != nil {
 		return GameStorageInvalidArgumentErr
 	}
@@ -26,7 +32,7 @@ func (gs *gameStorageImpl) Add(key string, g game.Game) error {
 	return nil
 }
 
-func (gs *gameStorageImpl) Remove(key string) error {
+func (gs *gameStorageImpl) Remove(key uuid.UUID) error {
 	if gs.games[key] == nil {
 		return GameStorageInvalidArgumentErr
 	}
@@ -35,10 +41,27 @@ func (gs *gameStorageImpl) Remove(key string) error {
 	return nil
 }
 
-func (gs *gameStorageImpl) Find(key string) (game.Game, error) {
+func (gs *gameStorageImpl) Find(key uuid.UUID) (game.Game, error) {
 	if gs.games[key] == nil {
 		return nil, GameStorageInvalidArgumentErr
 	}
 
 	return gs.games[key], nil
+}
+
+func (gs *gameStorageImpl) RandomMatch(u *user.User) (uuid.UUID, error) {
+	for key, g := range gs.games {
+		if len(g.Users()) < game.MaxNumberOfUsers {
+			err := g.JoinUser(u)
+			return key, err
+		}
+	}
+
+	ng, err := game.New(game.Height, game.Width)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	nid := uuid.New()
+	err = gs.Add(nid, ng)
+	return nid, err
 }

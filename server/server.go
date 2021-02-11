@@ -23,8 +23,10 @@ func NewServer(port int) http.Server {
 
 func attachHandlers(mux *mux.Router, gameStorage storage.GameStorage) {
 	mux.HandleFunc("/", handler.GameField(gameStorage)).Methods(http.MethodGet)
-	mux.HandleFunc("/start", handler.GameStart(gameStorage)).Methods(http.MethodGet)
-	mux.HandleFunc("/field", handler.GameField(gameStorage)).Methods(http.MethodGet)
-	mux.HandleFunc("/logs", handler.GameLogs(gameStorage)).Methods(http.MethodGet)
-	mux.HandleFunc("/fill", handler.GameFill(gameStorage)).Methods(http.MethodPost)
+	mux.HandleFunc("/game/start", handler.GameStart(gameStorage)).Methods(http.MethodGet)
+	mux.HandleFunc("/game/field", handler.GameField(gameStorage)).Methods(http.MethodGet)
+	mux.HandleFunc("/game/logs", handler.GameLogs(gameStorage)).Methods(http.MethodGet)
+	mux.HandleFunc("/game/fill", handler.GameFill(gameStorage)).Methods(http.MethodPost)
+	mux.HandleFunc("/match/join", handler.GameFill(gameStorage)).Methods(http.MethodPost)
+	mux.HandleFunc("/match/leave", handler.GameFill(gameStorage)).Methods(http.MethodPost)
 }

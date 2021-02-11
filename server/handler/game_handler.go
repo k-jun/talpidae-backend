@@ -2,27 +2,32 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"talpidae-backend/model/game"
 	"talpidae-backend/server/view"
 	"talpidae-backend/storage"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
-const (
-	DEBUG_KEY = "debug-key"
-	HEIGHT    = 150
-	WIDTH     = 80
+var (
+	GAME_ID            = "game_id"
+	GAME_ID_DEFAULT, _ = uuid.FromBytes([]byte("1cb0490d-5434-37dd-85f6-7d344cfc7f50"))
 )
 
 func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		newGame, err := game.New(HEIGHT, WIDTH)
+		newGame, err := game.New(game.Height, game.Width)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		_ = gs.Remove(DEBUG_KEY)
-		err = gs.Add(DEBUG_KEY, newGame)
+
+		gid := retrieveIdFromPath(r)
+		_ = gs.Remove(gid)
+		err = gs.Add(gid, newGame)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
@@ -40,7 +45,8 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 
 func GameField(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		g, err := gs.Find(DEBUG_KEY)
+		gid := retrieveIdFromPath(r)
+		g, err := gs.Find(gid)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
@@ -63,7 +69,8 @@ func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
-		g, err := gs.Find(DEBUG_KEY)
+		gid := retrieveIdFromPath(r)
+		g, err := gs.Find(gid)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
@@ -78,7 +85,8 @@ func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 
 func GameLogs(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		g, err := gs.Find(DEBUG_KEY)
+		gid := retrieveIdFromPath(r)
+		g, err := gs.Find(gid)
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
@@ -92,4 +100,17 @@ func GameLogs(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 		}
 		w.Write(bytes)
 	}
+}
+
+func retrieveIdFromPath(r *http.Request) uuid.UUID {
+	vars := mux.Vars(r)
+	gid := vars[GAME_ID]
+
+	guuid, err := uuid.FromBytes([]byte(gid))
+	if err != nil {
+		log.Println(err)
+		guuid = GAME_ID_DEFAULT
+	}
+
+	return guuid
 }

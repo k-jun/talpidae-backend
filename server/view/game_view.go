@@ -15,7 +15,8 @@ type Log struct {
 }
 
 type GameField struct {
-	Field [][]game.BlockType `json:"field"`
+	Field                [][]game.BlockType `json:"field"`
+	CurrentNumberOfUsers int                `json:"current_number_of_users"`
 }
 
 type GameLogs struct {
@@ -30,7 +31,7 @@ type GameCell struct {
 }
 
 func ToGameField(g game.Game) GameField {
-	return GameField{Field: g.Blocks()}
+	return GameField{Field: g.Blocks(), CurrentNumberOfUsers: len(g.Users())}
 }
 
 func ToGamePositionArray(g game.Game) GameLogs {

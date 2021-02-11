@@ -33,7 +33,7 @@ func TestGameStart(t *testing.T) {
 			attachHandlers(router, gameStorage)
 
 			rec := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/start", nil)
+			req := httptest.NewRequest(http.MethodGet, "/game/start", nil)
 			router.ServeHTTP(rec, req)
 
 			assert.Equal(t, c.outStatusCode, rec.Result().StatusCode)
@@ -54,7 +54,7 @@ func TestGameField(t *testing.T) {
 				GameMock: &game.GameMock{BlocksMock: [][]game.BlockType{{game.Treasure, game.SakuSaku}, {game.SakuSaku, game.SakuSaku}}},
 			},
 			outStatusCode: 200,
-			outBody:       `{"field":[[3,0],[0,0]]}`,
+			outBody:       `{"field":[[3,0],[0,0]],"current_number_of_users":0}`,
 		},
 		{
 			name:              "failure",
@@ -69,7 +69,7 @@ func TestGameField(t *testing.T) {
 			attachHandlers(router, c.beforeGameStorage)
 
 			rec := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/field", nil)
+			req := httptest.NewRequest(http.MethodGet, "/game/field", nil)
 			router.ServeHTTP(rec, req)
 
 			if rec.Result().StatusCode != 200 {
@@ -127,7 +127,7 @@ func TestGameFill(t *testing.T) {
 			attachHandlers(router, c.beforeGameStorage)
 
 			rec := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/fill", bytes.NewBuffer([]byte(c.inBody)))
+			req := httptest.NewRequest(http.MethodPost, "/game/fill", bytes.NewBuffer([]byte(c.inBody)))
 			router.ServeHTTP(rec, req)
 
 			assert.Equal(t, c.outStatusCode, rec.Result().StatusCode)
@@ -165,7 +165,7 @@ func TestGameLogs(t *testing.T) {
 			attachHandlers(router, c.beforeGameStorage)
 
 			rec := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/logs", nil)
+			req := httptest.NewRequest(http.MethodGet, "/game/logs", nil)
 			router.ServeHTTP(rec, req)
 
 			if rec.Result().StatusCode != 200 {
