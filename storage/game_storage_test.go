@@ -13,7 +13,7 @@ func TestNewGameStorage(t *testing.T) {
 }
 
 var (
-	testKey, _ = uuid.FromBytes([]byte("bbc142ff-4686-38ba-b4dc-76b82c8da544"))
+	testKey, _ = uuid.Parse("bbc142ff-4686-38ba-b4dc-76b82c8da544")
 )
 
 func TestGameStorageAdd(t *testing.T) {

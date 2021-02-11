@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"talpidae-backend/model/user"
 	"talpidae-backend/server/view"
@@ -12,16 +14,23 @@ func MatchJoin(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := view.FromMatchUser(r)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 
 		u := user.New(body.Id, body.Name)
 		gid, err := gs.RandomMatch(u)
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return
+		}
+		fmt.Println(gid)
 
 		mv := view.ToMatchGame(gid)
 		bytes, err := json.Marshal(mv)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -37,14 +46,15 @@ func MatchLeave(gs storage.GameStorage) func(http.ResponseWriter, *http.Request)
 			return
 		}
 		u := user.New(body.UserId, "")
-
 		g, err := gs.Find(body.UserId)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 		err = g.LeaveUser(u)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}

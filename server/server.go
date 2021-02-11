@@ -27,6 +27,6 @@ func attachHandlers(mux *mux.Router, gameStorage storage.GameStorage) {
 	mux.HandleFunc("/game/field", handler.GameField(gameStorage)).Methods(http.MethodGet)
 	mux.HandleFunc("/game/logs", handler.GameLogs(gameStorage)).Methods(http.MethodGet)
 	mux.HandleFunc("/game/fill", handler.GameFill(gameStorage)).Methods(http.MethodPost)
-	mux.HandleFunc("/match/join", handler.GameFill(gameStorage)).Methods(http.MethodPost)
-	mux.HandleFunc("/match/leave", handler.GameFill(gameStorage)).Methods(http.MethodPost)
+	mux.HandleFunc("/match/join", handler.MatchJoin(gameStorage)).Methods(http.MethodPost)
+	mux.HandleFunc("/match/leave", handler.MatchLeave(gameStorage)).Methods(http.MethodPost)
 }

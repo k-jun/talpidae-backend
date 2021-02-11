@@ -14,7 +14,7 @@ import (
 
 var (
 	GAME_ID            = "game_id"
-	GAME_ID_DEFAULT, _ = uuid.FromBytes([]byte("1cb0490d-5434-37dd-85f6-7d344cfc7f50"))
+	GAME_ID_DEFAULT, _ = uuid.Parse("1cb0490d-5434-37dd-85f6-7d344cfc7f50")
 )
 
 func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
@@ -106,7 +106,7 @@ func retrieveIdFromPath(r *http.Request) uuid.UUID {
 	vars := mux.Vars(r)
 	gid := vars[GAME_ID]
 
-	guuid, err := uuid.FromBytes([]byte(gid))
+	guuid, err := uuid.Parse(gid)
 	if err != nil {
 		log.Println(err)
 		guuid = GAME_ID_DEFAULT
