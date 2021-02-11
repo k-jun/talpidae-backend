@@ -39,14 +39,16 @@ const (
 	ArrowDown      BlockType = 5
 	ArrowLeft      BlockType = 6
 	ArrowRight     BlockType = 7
-	WanaArrowUp    BlockType = 8
-	WanaArrowDown  BlockType = 9
-	WanaArrowLeft  BlockType = 10
-	WanaArrowRight BlockType = 11
+	FakeArrowUp    BlockType = 8
+	FakeArrowDown  BlockType = 9
+	FakeArrowLeft  BlockType = 10
+	FakeArrowRight BlockType = 11
+	TrapArrow      BlockType = 12
+	TrapTreasure   BlockType = 13
 )
 
 func validateBlockType(x BlockType) bool {
-	all := []BlockType{WanaArrowUp, WanaArrowDown, WanaArrowLeft, WanaArrowRight}
+	all := []BlockType{FakeArrowUp, FakeArrowDown, FakeArrowLeft, FakeArrowRight, TrapArrow, TrapTreasure}
 	for _, bt := range all {
 		if bt == x {
 			return true
@@ -57,7 +59,8 @@ func validateBlockType(x BlockType) bool {
 
 func isFillable(x BlockType) bool {
 	if x == Treasure || x == ArrowUp || x == ArrowDown || x == ArrowLeft || x == ArrowRight ||
-		x == WanaArrowUp || x == WanaArrowDown || x == WanaArrowLeft || x == WanaArrowRight {
+		x == FakeArrowUp || x == FakeArrowDown || x == FakeArrowLeft || x == FakeArrowRight ||
+		x == TrapArrow || x == TrapTreasure {
 		return false
 	}
 	return true

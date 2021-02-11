@@ -12,10 +12,12 @@ ArrowUp        = 4
 ArrowDown      = 5
 ArrowLeft      = 6
 ArrowRight     = 7
-WanaArrowUp    = 8
-WanaArrowDown  = 9
-WanaArrowLeft  = 10
-WanaArrowRight = 11
+FakeArrowUp    = 8
+FakeArrowDown  = 9
+FakeArrowLeft  = 10
+FakeArrowRight = 11
+TrapArrow      = 12
+TrapTreasure   = 13
 ```
 
 ## apis
