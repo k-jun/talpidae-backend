@@ -61,6 +61,10 @@ func (gs *gameStorageImpl) RandomMatch(u *user.User) (uuid.UUID, error) {
 	if err != nil {
 		return uuid.Nil, err
 	}
+	err = ng.JoinUser(u)
+	if err != nil {
+		return uuid.Nil, err
+	}
 	nid := uuid.New()
 	err = gs.Add(nid, ng)
 	return nid, err

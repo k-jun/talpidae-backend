@@ -1,7 +1,9 @@
 package storage
 
 import (
+	"errors"
 	"talpidae-backend/model/game"
+	"talpidae-backend/model/user"
 	"testing"
 
 	"github.com/google/uuid"
@@ -123,6 +125,49 @@ func TestGameStorageFind(t *testing.T) {
 				return
 			}
 			assert.Equal(t, c.outGame, g)
+		})
+	}
+}
+
+func TestGameStorageRandomMatch(t *testing.T) {
+	cases := []struct {
+		name          string
+		beforeGames   map[uuid.UUID]game.Game
+		inUser        *user.User
+		afterGamesCnt int
+		afterUsersCnt int
+		outError      error
+	}{
+		{
+			name:          "success",
+			beforeGames:   map[uuid.UUID]game.Game{testKey: &game.GameMock{}},
+			inUser:        &user.User{},
+			afterGamesCnt: 1,
+		},
+		{
+			name: "success",
+			beforeGames: map[uuid.UUID]game.Game{testKey: &game.GameMock{
+				UsersMock: []*user.User{{}, {}, {}, {}},
+			}},
+			inUser:        &user.User{},
+			afterGamesCnt: 2,
+		},
+		{
+			name:        "failure",
+			beforeGames: map[uuid.UUID]game.Game{testKey: &game.GameMock{ErrorMock: errors.New("")}},
+			outError:    errors.New(""),
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			gs := gameStorageImpl{games: c.beforeGames}
+			_, err := gs.RandomMatch(c.inUser)
+			if err != nil {
+				assert.Equal(t, c.outError, err)
+				return
+			}
+			assert.Equal(t, c.afterGamesCnt, len(gs.games))
 		})
 	}
 }

@@ -250,13 +250,19 @@ func (g *gameImpl) Users() []*user.User {
 func (g *gameImpl) JoinUser(u *user.User) error {
 	g.Lock()
 	defer g.Unlock()
-
+	if u == nil {
+		return InvalidArgumentErr
+	}
+	g.users = append(g.users, u)
 	return nil
 }
 
 func (g *gameImpl) LeaveUser(u *user.User) error {
 	g.Lock()
 	defer g.Unlock()
+	if u == nil {
+		return InvalidArgumentErr
+	}
 
 	for i, user := range g.users {
 		if u == user {

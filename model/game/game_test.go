@@ -1,6 +1,7 @@
 package game
 
 import (
+	"talpidae-backend/model/user"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,6 +92,76 @@ func TestFill(t *testing.T) {
 			assert.Equal(t, c.afterBlocks, g.blocks)
 			assert.Equal(t, c.afterLogs, g.logs)
 
+		})
+	}
+}
+
+func TestJoinUser(t *testing.T) {
+	testUser := &user.User{}
+	cases := []struct {
+		name        string
+		beforeUsers []*user.User
+		inUser      *user.User
+		afterUsers  []*user.User
+		outError    error
+	}{
+		{
+			name:        "success",
+			beforeUsers: []*user.User{},
+			inUser:      testUser,
+			afterUsers:  []*user.User{testUser},
+		},
+		{
+			name:     "failure",
+			inUser:   nil,
+			outError: InvalidArgumentErr,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			g := gameImpl{users: c.beforeUsers}
+			err := g.JoinUser(c.inUser)
+			if err != nil {
+				assert.Equal(t, c.outError, err)
+				return
+			}
+			assert.Equal(t, c.afterUsers, g.users)
+		})
+	}
+}
+
+func TestLeaveUser(t *testing.T) {
+	testUser := &user.User{}
+	cases := []struct {
+		name        string
+		beforeUsers []*user.User
+		inUser      *user.User
+		afterUsers  []*user.User
+		outError    error
+	}{
+		{
+			name:        "success",
+			beforeUsers: []*user.User{testUser},
+			inUser:      testUser,
+			afterUsers:  []*user.User{},
+		},
+		{
+			name:     "failure",
+			inUser:   nil,
+			outError: InvalidArgumentErr,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			g := gameImpl{users: c.beforeUsers}
+			err := g.LeaveUser(c.inUser)
+			if err != nil {
+				assert.Equal(t, c.outError, err)
+				return
+			}
+			assert.Equal(t, c.afterUsers, g.users)
 		})
 	}
 }
