@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"talpidae-backend/model/user"
@@ -22,10 +21,10 @@ func MatchJoin(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 		u := user.New(body.Id, body.Name)
 		gid, err := gs.RandomMatch(u)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
-		fmt.Println(gid)
 
 		mv := view.ToMatchGame(gid)
 		bytes, err := json.Marshal(mv)

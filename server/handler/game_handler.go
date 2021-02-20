@@ -21,6 +21,7 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 	return func(w http.ResponseWriter, r *http.Request) {
 		newGame, err := game.New(game.Height, game.Width)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -29,6 +30,7 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 		_ = gs.Remove(gid)
 		err = gs.Add(gid, newGame)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -36,6 +38,7 @@ func GameStart(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 
 		bytes, err := json.Marshal(gv)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -48,6 +51,7 @@ func GameField(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 		gid := retrieveIdFromPath(r)
 		g, err := gs.Find(gid)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
@@ -55,6 +59,7 @@ func GameField(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) 
 
 		bytes, err := json.Marshal(gv)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -66,17 +71,20 @@ func GameFill(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := view.FromGameCell(r)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 		gid := retrieveIdFromPath(r)
 		g, err := gs.Find(gid)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
 		err = g.Fill(body.UserId, body.Value, body.H, body.W)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
@@ -88,6 +96,7 @@ func GameLogs(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 		gid := retrieveIdFromPath(r)
 		g, err := gs.Find(gid)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
@@ -95,6 +104,7 @@ func GameLogs(gs storage.GameStorage) func(http.ResponseWriter, *http.Request) {
 
 		bytes, err := json.Marshal(gv)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
